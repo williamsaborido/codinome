@@ -71,8 +71,8 @@ class DatabaseHelper {
   static Future DeleteAsync(String table, int id) async{
     try{
       _db.delete(table,
-        where: "id = ?",
-        whereArgs: [id]
+          where: "id = ?",
+          whereArgs: [id]
       );
     }
     catch(ex) {
@@ -89,13 +89,15 @@ class DatabaseHelper {
     }
   }
 
-  static Future GetAsync() async{
+  static Future GetAsync(String table, int id) async{
     try{
-      throw  Exception('Method raises NotImplementedException');
+      _db.query(table,
+      where: "id = ?",
+      whereArgs: [id]);
     }
-    finally
+    catch(ex)
     {
-      //TODO implement GetAsync or remove from logic code
+      throw Exception('Error querying data in the database with message: $ex');
     }
   }
 

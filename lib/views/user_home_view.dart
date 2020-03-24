@@ -1,4 +1,4 @@
-import 'package:codinomeapp/Helpers/router_helper.dart';
+import 'package:codinome/Helpers/router_helper.dart';
 import 'package:flutter/material.dart';
 
 class UserHome extends StatefulWidget{
@@ -10,7 +10,7 @@ class UserHome extends StatefulWidget{
 
 class _UserHomeState extends State<UserHome> {
 
-  final _users;
+  //final _users;
 
   @override
   void setState(fn) {
@@ -36,8 +36,8 @@ class _UserHomeState extends State<UserHome> {
         title: Text('Users'),
         centerTitle: true,
         leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () => Router.Pop(context),
-          ),
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Router.Pop(context),
+        ),
       );
 }

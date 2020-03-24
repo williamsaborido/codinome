@@ -12,7 +12,7 @@ class Router {
     Navigator.pop(context);
   }
 
-  static Future PushReplace( Widget page, BuildContext context){
+  static Future PushReplace(Widget page, BuildContext context){
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => page));
   }
 
