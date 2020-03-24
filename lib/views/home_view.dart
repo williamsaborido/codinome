@@ -3,6 +3,8 @@ import 'package:codinome/Helpers/router_helper.dart';
 import 'package:codinome/Views/user_home_view.dart';
 import 'package:flutter/material.dart';
 
+import '../Helpers/database_helper.dart';
+
 class Home extends StatelessWidget {
   BuildContext _context;
 
@@ -45,7 +47,9 @@ class Home extends StatelessWidget {
 void AddUser() async {
   try{
 
-    print(await DatabaseHelper.CreateAsync('user', {'name': 'william', 'password': '1234'}));
+    var dbHelper = DatabaseHelper();
+
+    print(await dbHelper.CreateAsync('user', {'name': 'william', 'password': '1234'}));
   }
   catch(ex){
     print(ex);

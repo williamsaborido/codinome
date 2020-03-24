@@ -29,7 +29,7 @@ class DatabaseHelper {
   }
 
   // iniciando nosso banco de dados em async pois ele é uma transição
-  static initBd() async {
+  Future<Database> initBd() async {
     // Directory faz parte do plugin dart:io e o getApplicationDocumentsDirectory() faz parte do path_provider
     // aqui nós estamos acessando o diretório nativo do android
     Directory documentoDiretorio = await getApplicationDocumentsDirectory();
@@ -39,38 +39,40 @@ class DatabaseHelper {
         documentoDiretorio.path, "codinome.db"
     );
 
+    print("Saving at $caminho");
+
     // após ter acesso ao local do nosso BD, iremos abri-lo
     return await openDatabase(caminho, version: 1, onCreate: _onCreate);
   }
 
   //criando o método _onCreate que irá criar o nosso BD
-  static void _onCreate(Database db, int version) async {
+  Future _onCreate(Database db, int version) async {
     // aqui iremos colocar o SQL que é outra linguagem, por isso, colocaremos
     // dentro de aspas, pois é string
     await db.execute("CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, password TEXT)");
   }
 
-  static Future CreateAsync(String table, Map<String, dynamic> data) async{
+  Future<int> CreateAsync(String table, Map<String, dynamic> data) async{
     try{
-      _db.insert(table, data);
+      return await _db.insert(table, data);
     }
     catch(ex) {
       throw Exception('Error inserting data in the database with message: $ex');
     }
   }
 
-  static Future UpdateAsync(String table, Map<String, dynamic> data) async{
+  Future<int> UpdateAsync(String table, Map<String, dynamic> data) async{
     try{
-      _db.update(table, data);
+     return await  _db.update(table, data);
     }
     catch(ex) {
       throw Exception('Error updating data in the database with message: $ex');
     }
   }
 
-  static Future DeleteAsync(String table, int id) async{
+  Future<int> DeleteAsync(String table, int id) async{
     try{
-      _db.delete(table,
+      return await _db.delete(table,
           where: "id = ?",
           whereArgs: [id]
       );
@@ -80,20 +82,20 @@ class DatabaseHelper {
     }
   }
 
-  static Future<Map<String, dynamic>> ReadAsync(String table) async{
+  Future<List<Map<String, dynamic>>> ReadAsync(String table) async{
     try{
-      _db.query(table);
+      return await _db.query(table);
     }
     catch(ex) {
       throw Exception('Error reading data in the database with message: $ex');
     }
   }
 
-  static Future GetAsync(String table, int id) async{
+  Future<Map<String, dynamic>> GetAsync(String table, int id) async{
     try{
-      _db.query(table,
+      return await _db.query(table,
       where: "id = ?",
-      whereArgs: [id]);
+      whereArgs: [id]).then((data) => data.first);
     }
     catch(ex)
     {
@@ -101,9 +103,10 @@ class DatabaseHelper {
     }
   }
 
-  static Future QueryAsync(String table, String column, dynamic value){
+  Future<List<Map<String, dynamic>>> QueryAsync(String table, String column, dynamic value) async{
     try{
-      _db.query(table,
+
+      return await _db.query(table,
         where: "$column = ?",
         whereArgs: [value],
       );
