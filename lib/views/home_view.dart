@@ -18,9 +18,12 @@ class Home extends StatelessWidget {
       );
 }
 
+DatabaseHelper dbHelper;
+
 class _HomeBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: Container(
         padding: EdgeInsets.all(5),
@@ -45,17 +48,16 @@ class _HomeBody extends StatelessWidget {
       ]);
 }
 
-void AddUser(BuildContext context) async {
+Future AddUser(BuildContext context) async {
   try {
     DatabaseHelper db = await DatabaseHelper().instance();
 
-    print(
-        await db.CreateAsync('user', {'name': 'william', 'password': '1234'}));
+    var result = await db.ExistsAsync('user', 'name', 'william');
 
-    await db.Dispose();
+    await db.DisposeAsync();
 
     var snack = SnackBar(
-      content: Text('Added'),
+      content: Text('Returned with $result'),
       elevation: 10,
     );
 

@@ -10,38 +10,39 @@ class DatabaseHelper {
   DatabaseHelper();
 
   Future<DatabaseHelper> instance() async{
-    bool exists = await File('/data/user/0/com.ecorp.codinome/app_flutter/codinome.db').exists();
-    print('db exists: $exists');
+
     await initBd();
-    print('db set');
+
     return this;
   }
 
   Future<Database> initBd() async {
-    //Directory documentoDiretorio = await getApplicationDocumentsDirectory();
-    Directory documentoDiretorio = await getExternalStorageDirectory();
-    String caminho = join(
-        documentoDiretorio.path, "codinome.db"
+
+    Directory storageDir = await getExternalStorageDirectory();
+    String path = join(
+        storageDir.path, "codinome.db"
     );
-      print('trying create ' + caminho);
-    _db = await openDatabase(caminho, version: 1, onCreate: _onCreate);
+
+    _db = await openDatabase(path, version: 1, onCreate: _onCreate);
   }
 
   static void _onCreate(Database db, int version) async {
-    print('calling create');
+
     await db.execute("CREATE TABLE user (id INTEGER PRIMARY KEY, name TEXT, password TEXT)");
   }
 
-  Future CreateAsync(String table, Map<String, dynamic> data) async{
+  Future<int> CreateAsync(String table, Map<String, dynamic> data) async{
     try{
-      print('return: ${await _db.insert(table, data)}');
+
+      return await _db.insert(table, data);
     }
     catch(ex) {
+
       throw Exception('Error inserting data in the database with message: $ex');
     }
   }
 
-  Future UpdateAsync(String table, Map<String, dynamic> data) async{
+  Future<int> UpdateAsync(String table, Map<String, dynamic> data) async{
     try{
       _db.update(table, data);
     }
@@ -50,9 +51,9 @@ class DatabaseHelper {
     }
   }
 
-  Future DeleteAsync(String table, int id) async{
+  Future<int> DeleteAsync(String table, int id) async{
     try{
-      _db.delete(table,
+      return await _db.delete(table,
           where: "id = ?",
           whereArgs: [id]
       );
@@ -64,6 +65,7 @@ class DatabaseHelper {
 
   Future<Map<String, dynamic>> ReadAsync(String table) async{
     try{
+
       _db.query(table);
     }
     catch(ex) {
@@ -71,11 +73,14 @@ class DatabaseHelper {
     }
   }
 
-  Future GetAsync(String table, int id) async{
+  Future<Map<String, dynamic>> GetAsync(String table, int id) async{
     try{
-      _db.query(table,
+
+      var result = await _db.query(table,
       where: "id = ?",
       whereArgs: [id]);
+
+      return result.first;
     }
     catch(ex)
     {
@@ -83,19 +88,30 @@ class DatabaseHelper {
     }
   }
 
-  Future QueryAsync(String table, String column, dynamic value){
+  Future<List<Map<String, dynamic>>> QueryAsync(String table, String column, dynamic value) async{
     try{
-      _db.query(table,
+      var result = await _db.query(table,
         where: "$column = ?",
         whereArgs: [value],
       );
+
+      return result;
     }
     catch(ex) {
       throw Exception('Error querying data in the database with message: $ex');
     }
   }
 
-  Future Dispose() async{
+  Future<bool> ExistsAsync(String table, String column, dynamic value) async{
+    var result = await _db.query(table,
+      where: "$column = ?",
+      whereArgs: [value],
+    );
+
+    return result.length > 0;
+  }
+
+  Future DisposeAsync() async{
 
     await _db.close();
   }
