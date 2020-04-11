@@ -3,18 +3,12 @@ import 'package:codinome/Helpers/router_helper.dart';
 import 'package:codinome/Views/user_home_view.dart';
 import 'package:flutter/material.dart';
 
-import '../Helpers/database_helper.dart';
-
 class Home extends StatelessWidget {
-  BuildContext _context;
-
   @override
   Widget build(BuildContext context) {
-    _context = context;
-
     return Scaffold(
       appBar: HomeAppBar(),
-      body: HomeBody(),
+      body: _HomeBody(),
     );
   }
 
@@ -22,11 +16,18 @@ class Home extends StatelessWidget {
         title: Text('Codinome'),
         centerTitle: true,
       );
+}
 
-  Widget HomeBody() => Container(
+class _HomeBody extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
         padding: EdgeInsets.all(5),
-        child: MenuItemList(_context),
-      );
+        child: MenuItemList(context),
+      ),
+    );
+  }
 
   Widget MenuItemList(BuildContext context) => ListView(children: [
         ListTile(
@@ -40,18 +41,26 @@ class Home extends StatelessWidget {
             trailing: Icon(Icons.exit_to_app),
             title: Text('Add user'),
             subtitle: Text('Add a new user on the app'),
-            onTap: () => AddUser()),
+            onTap: () => AddUser(context)),
       ]);
 }
 
-void AddUser() async {
-  try{
+void AddUser(BuildContext context) async {
+  try {
+    DatabaseHelper db = await DatabaseHelper().instance();
 
-    var dbHelper = DatabaseHelper();
+    print(
+        await db.CreateAsync('user', {'name': 'william', 'password': '1234'}));
 
-    print(await dbHelper.CreateAsync('user', {'name': 'william', 'password': '1234'}));
-  }
-  catch(ex){
+    await db.Dispose();
+
+    var snack = SnackBar(
+      content: Text('Added'),
+      elevation: 10,
+    );
+
+    Scaffold.of(context).showSnackBar(snack);
+  } catch (ex) {
     print(ex);
   }
 }
