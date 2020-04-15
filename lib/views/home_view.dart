@@ -1,5 +1,7 @@
 import 'package:codinome/Helpers/database_helper.dart';
+import 'package:codinome/Helpers/dialog_helper.dart';
 import 'package:codinome/Helpers/router_helper.dart';
+import 'package:codinome/Models/user_model.dart';
 import 'package:codinome/views/user_create_view.dart';
 import 'package:flutter/material.dart';
 
@@ -38,30 +40,31 @@ class _HomeBody extends StatelessWidget {
             trailing: Icon(Icons.exit_to_app),
             title: Text('Add user'),
             subtitle: Text('Add a new user on the app'),
-            onTap: () => Router.PushTo(UserCreate(), context)),
+            onTap: () => AddUser(context),
+            ),
         ListTile(
             leading: Icon(Icons.add),
             trailing: Icon(Icons.exit_to_app),
             title: Text('Add user'),
             subtitle: Text('Add a new user on the app'),
-            onTap: () => AddUser(context)),
+            onTap: () => ShowMessage(context, 'Message shown'),
+            ),
       ]);
+}
+
+void ShowMessage(BuildContext context, String message){
+  DialogHelper.ShowSnack(context, message)  ;
 }
 
 Future AddUser(BuildContext context) async {
   try {
-    DatabaseHelper db = await DatabaseHelper().instance();
 
-    var result = await db.ExistsAsync('user', 'name', 'william');
+    var result = await Router.PushTo(UserCreate(), context) as User;
 
-    await db.DisposeAsync();
+    if (!result.name.isEmpty){
+      DialogHelper.ShowSnack(context, '${result.name} foi adicionado');
+    }
 
-    var snack = SnackBar(
-      content: Text('Returned with $result'),
-      elevation: 10,
-    );
-
-    Scaffold.of(context).showSnackBar(snack);
   } catch (ex) {
     print(ex);
   }

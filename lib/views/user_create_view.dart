@@ -1,5 +1,6 @@
 import 'package:codinome/Helpers/database_helper.dart';
 import 'package:codinome/Helpers/dialog_helper.dart';
+import 'package:codinome/Helpers/router_helper.dart';
 import 'package:codinome/Models/user_model.dart';
 import 'package:flutter/material.dart';
 
@@ -70,7 +71,7 @@ class _UserCreateBody extends StatelessWidget {
                   child: Icon(
                     Icons.supervised_user_circle,
                     size: 100,
-                    color: Colors.grey,
+                    color: Colors.blue,
                   ),
                 ),
                 Padding(
@@ -137,20 +138,18 @@ class _UserCreateBody extends StatelessWidget {
     try {
       DatabaseHelper dbHelper = await DatabaseHelper().instance();
 
-      User user = User(
-        name: _nameController.text,
-        password: _passwordController.text,
-      );
-
       var result = await dbHelper.ExistsAsync('user', 'name', user.name);
 
       if (result) {
-        DialogHelper.ShowSnack(context, 'Nome de usuário já existe');
+        DialogHelper.ShowSnack(context, 'Nome de usuário ${user.name} já existe');
       } else {
         await dbHelper.CreateAsync('user', user.toJson());
       }
 
       await dbHelper.DisposeAsync();
+
+      Router.Pop(context, data: user);
+
     } catch (ex) {
       print(ex);
     }
