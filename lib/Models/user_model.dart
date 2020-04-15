@@ -1,3 +1,5 @@
+import 'package:codinome/Helpers/database_helper.dart';
+
 class User{
   int id;
   String name;
@@ -5,15 +7,16 @@ class User{
 
   User({this.id, this.name, this.password});
 
-  factory User.fromDatabase(int id){
+  factory User.fromDatabase(DatabaseHelper dbHelper, int id) {
+    return User();
+  }
 
-
-
-    //return User(
-    //  id: ,
-    //  name: ,
-    //  password: ,
-    //);
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'password': password,
+    };
   }
 
 }

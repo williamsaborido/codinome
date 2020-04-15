@@ -1,6 +1,6 @@
 import 'package:codinome/Helpers/database_helper.dart';
 import 'package:codinome/Helpers/router_helper.dart';
-import 'package:codinome/Views/user_home_view.dart';
+import 'package:codinome/views/user_create_view.dart';
 import 'package:flutter/material.dart';
 
 class Home extends StatelessWidget {
@@ -18,12 +18,9 @@ class Home extends StatelessWidget {
       );
 }
 
-DatabaseHelper dbHelper;
-
 class _HomeBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: Container(
         padding: EdgeInsets.all(5),
@@ -34,11 +31,14 @@ class _HomeBody extends StatelessWidget {
 
   Widget MenuItemList(BuildContext context) => ListView(children: [
         ListTile(
-            leading: Icon(Icons.supervised_user_circle),
+            leading: Hero(
+              tag: "UserAdd",
+              child: Icon(Icons.supervised_user_circle),
+            ),
             trailing: Icon(Icons.exit_to_app),
             title: Text('Add user'),
             subtitle: Text('Add a new user on the app'),
-            onTap: () => Router.PushTo(UserHome(), context)),
+            onTap: () => Router.PushTo(UserCreate(), context)),
         ListTile(
             leading: Icon(Icons.add),
             trailing: Icon(Icons.exit_to_app),
