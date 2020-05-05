@@ -61,7 +61,7 @@ Future AddUser(BuildContext context) async {
 
     var result = await Router.PushTo(UserCreate(), context) as User;
 
-    if (!result.name.isEmpty){
+    if (result != null){
       DialogHelper.ShowSnack(context, '${result.name} foi adicionado');
     }
 

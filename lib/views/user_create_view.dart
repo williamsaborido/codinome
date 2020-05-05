@@ -46,6 +46,9 @@ class _UserCreateBody extends StatelessWidget {
   final _nameController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  final _nameFocus = FocusNode();
+  final _passwordFocus = FocusNode();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,7 +80,10 @@ class _UserCreateBody extends StatelessWidget {
                 Padding(
                   padding: EdgeInsets.all(20),
                   child: TextFormField(
+                    textInputAction: TextInputAction.next,
+                    onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
                     controller: _nameController,
+                    focusNode: _nameFocus,
                     validator: (val) {
                       if (val.isEmpty) {
                         return 'Informe o nome de usuário';
@@ -95,10 +101,13 @@ class _UserCreateBody extends StatelessWidget {
                 Padding(
                   padding: EdgeInsets.all(20),
                   child: TextFormField(
+                    textInputAction: TextInputAction.done,
+                    onFieldSubmitted: (_) => (_okClick(context)),
                     controller: _passwordController,
+                    focusNode: _passwordFocus,
                     validator: (val) {
                       if (val.isEmpty) {
-                        return 'Informe o nome de usuário';
+                        return 'Informe a senha';
                       } else {
                         return null;
                       }
@@ -122,14 +131,23 @@ class _UserCreateBody extends StatelessWidget {
 
   Future _okClick(BuildContext context) async {
     if (!_key.currentState.validate()) {
-      return;
+
+      if (_nameController.text.isEmpty){
+        _nameFocus.requestFocus();
+        return;
+      }
+
+      if (_passwordController.text.isEmpty){
+       _passwordFocus.requestFocus();
+       return;
+      }
     }
 
     await _AddUser(
       context,
       User(
-        name: _nameController.text,
-        password: _passwordController.text,
+        name: _nameController.text.trim(),
+        password: _passwordController.text.trim(),
       ),
     );
   }
@@ -142,14 +160,14 @@ class _UserCreateBody extends StatelessWidget {
 
       if (result) {
         DialogHelper.ShowSnack(context, 'Nome de usuário ${user.name} já existe');
+        user = null;
       } else {
         await dbHelper.CreateAsync('user', user.toJson());
+
+        await Router.Pop(context, data: user);
       }
 
       await dbHelper.DisposeAsync();
-
-      Router.Pop(context, data: user);
-
     } catch (ex) {
       print(ex);
     }

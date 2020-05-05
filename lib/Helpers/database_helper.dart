@@ -114,5 +114,7 @@ class DatabaseHelper {
   Future DisposeAsync() async{
 
     await _db.close();
+
+    print('DisposeAsync called');
   }
 }
