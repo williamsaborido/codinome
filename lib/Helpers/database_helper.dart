@@ -16,12 +16,14 @@ class DatabaseHelper {
     return this;
   }
 
-  Future<Database> initBd() async {
+  Future initBd() async {
 
     Directory storageDir = await getExternalStorageDirectory();
     String path = join(
         storageDir.path, "codinome.db"
     );
+
+    print(path);
 
     _db = await openDatabase(path, version: 1, onCreate: _onCreate);
   }
@@ -42,7 +44,7 @@ class DatabaseHelper {
     }
   }
 
-  Future<int> UpdateAsync(String table, Map<String, dynamic> data) async{
+  Future UpdateAsync(String table, Map<String, dynamic> data) async{
     try{
       _db.update(table, data);
     }

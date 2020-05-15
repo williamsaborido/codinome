@@ -39,7 +39,7 @@ class _UserCreateState extends State<UserCreate> {
 }
 
 class _UserCreateBody extends StatelessWidget {
-  GlobalKey<FormState> _key;
+  final GlobalKey<FormState> _key;
 
   _UserCreateBody(this._key);
 
@@ -48,6 +48,8 @@ class _UserCreateBody extends StatelessWidget {
 
   final _nameFocus = FocusNode();
   final _passwordFocus = FocusNode();
+
+  final _dbHelper = DatabaseHelper();
 
   @override
   Widget build(BuildContext context) {
@@ -86,9 +88,11 @@ class _UserCreateBody extends StatelessWidget {
                     focusNode: _nameFocus,
                     validator: (val) {
                       if (val.isEmpty) {
-                        return 'Informe o nome de usuário';
+                        return 'Informe o usuário';
                       } else {
-                        return null;
+                        return _validateUser(val)
+                            ? null
+                            : 'Usuário $val já existe';
                       }
                     },
                     decoration: InputDecoration(
@@ -131,15 +135,14 @@ class _UserCreateBody extends StatelessWidget {
 
   Future _okClick(BuildContext context) async {
     if (!_key.currentState.validate()) {
-
-      if (_nameController.text.isEmpty){
+      if (_nameController.text.isEmpty) {
         _nameFocus.requestFocus();
         return;
       }
 
-      if (_passwordController.text.isEmpty){
-       _passwordFocus.requestFocus();
-       return;
+      if (_passwordController.text.isEmpty) {
+        _passwordFocus.requestFocus();
+        return;
       }
     }
 
@@ -154,22 +157,23 @@ class _UserCreateBody extends StatelessWidget {
 
   Future _AddUser(BuildContext context, User user) async {
     try {
-      DatabaseHelper dbHelper = await DatabaseHelper().instance();
 
-      var result = await dbHelper.ExistsAsync('user', 'name', user.name);
+      await _dbHelper.CreateAsync('user', user.toJson());
 
-      if (result) {
-        DialogHelper.ShowSnack(context, 'Nome de usuário ${user.name} já existe');
-        user = null;
-      } else {
-        await dbHelper.CreateAsync('user', user.toJson());
+      await Router.Pop(context, data: user);
 
-        await Router.Pop(context, data: user);
-      }
-
-      await dbHelper.DisposeAsync();
+      await _dbHelper.DisposeAsync();
     } catch (ex) {
       print(ex);
     }
+  }
+
+  _validateUser<bool>(String val) {
+
+    var result = false;
+
+    _dbHelper.ExistsAsync('user', 'name', val).then((value) => result = !value);
+
+    return result;
   }
 }
