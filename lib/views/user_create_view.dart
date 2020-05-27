@@ -171,9 +171,7 @@ class _UserCreateBody extends StatelessWidget {
   _validateUser<bool>(String val) {
 
     var result = false;
-
     _dbHelper.ExistsAsync('user', 'name', val).then((value) => result = !value);
-
     return result;
   }
 }

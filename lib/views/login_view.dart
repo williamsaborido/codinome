@@ -63,7 +63,8 @@ class _LoginState extends State<Login> {
                         ),
                         border: Border.all(
                           color: userFocusColor,
-                        )),
+                        ),
+                    ),
                     child: TextFormField(
                       focusNode: _userNode,
                       controller: _userController,
@@ -96,6 +97,7 @@ class _LoginState extends State<Login> {
                       focusNode: _passwordNode,
                       controller: _passwordController,
                       textInputAction: TextInputAction.done,
+                      onFieldSubmitted: _onLoginPress(),
                       decoration: InputDecoration(
                         labelText: 'Senha',
                         hintText: 'Digite a senha',
@@ -135,8 +137,13 @@ class _LoginState extends State<Login> {
   }
 
   _onLoginPress() {
-    if(!_formKey.currentState.validate()){
-      print('fail');
-    }
+//    if(!_formKey.currentState.validate()){
+//      print('fail');
+//    }
+
+  if (_userController.text.trim().isEmpty){
+    print('user is empty');
+  }
+
   }
 }
