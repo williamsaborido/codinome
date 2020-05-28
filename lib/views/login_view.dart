@@ -58,18 +58,19 @@ class _LoginState extends State<Login> {
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 5),
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(30),
-                        ),
-                        border: Border.all(
-                          color: userFocusColor,
-                        ),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(30),
+                      ),
+                      border: Border.all(
+                        color: userFocusColor,
+                      ),
                     ),
                     child: TextFormField(
                       focusNode: _userNode,
                       controller: _userController,
                       textInputAction: TextInputAction.next,
-                      onFieldSubmitted: (val) => FocusScope.of(context).nextFocus(),
+                      onFieldSubmitted: (val) =>
+                          FocusScope.of(context).nextFocus(),
                       validator: (val) => _onUserValidate(val),
                       decoration: InputDecoration(
                         labelText: 'Usuário',
@@ -77,7 +78,6 @@ class _LoginState extends State<Login> {
                         prefixIcon: Icon(Icons.face),
                         border: InputBorder.none,
                         contentPadding: EdgeInsets.all(10),
-
                       ),
                     ),
                   ),
@@ -120,15 +120,15 @@ class _LoginState extends State<Login> {
     );
   }
 
-  void _onFocusChange(){
-    setState((){
-      userFocusColor = _userNode.hasFocus ? Colors.blue: Colors.grey;
-      passwordFocusColor = _passwordNode.hasFocus ? Colors.blue: Colors.grey;
+  void _onFocusChange() {
+    setState(() {
+      userFocusColor = _userNode.hasFocus ? Colors.blue : Colors.grey;
+      passwordFocusColor = _passwordNode.hasFocus ? Colors.blue : Colors.grey;
     });
   }
 
   String _onUserValidate(String val) {
-    if (val.trim().isEmpty){
+    if (val.trim().isEmpty) {
       return '';
     } else {
       userFocusColor = Colors.grey;
@@ -141,9 +141,8 @@ class _LoginState extends State<Login> {
 //      print('fail');
 //    }
 
-  if (_userController.text.trim().isEmpty){
-    print('user is empty');
-  }
-
+    if (_userController.text.trim().isEmpty) {
+      print('user is empty');
+    }
   }
 }

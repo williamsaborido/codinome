@@ -174,4 +174,5 @@ class _UserCreateBody extends StatelessWidget {
     _dbHelper.ExistsAsync('user', 'name', val).then((value) => result = !value);
     return result;
   }
+
 }
