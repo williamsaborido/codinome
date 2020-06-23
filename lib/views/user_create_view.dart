@@ -16,6 +16,12 @@ class _UserCreateState extends State<UserCreate> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
+    DatabaseHelper.connect()
+        .catchError((test, obj) => print('$test: ${obj}'))
+        .then((result) {
+      print('done');
+    });
   }
 
   @override
@@ -48,8 +54,6 @@ class _UserCreateBody extends StatelessWidget {
 
   final _nameFocus = FocusNode();
   final _passwordFocus = FocusNode();
-
-  final _dbHelper = DatabaseHelper();
 
   @override
   Widget build(BuildContext context) {
@@ -90,9 +94,7 @@ class _UserCreateBody extends StatelessWidget {
                       if (val.isEmpty) {
                         return 'Informe o usuário';
                       } else {
-                        return _validateUser(val)
-                            ? null
-                            : 'Usuário $val já existe';
+                        return null;
                       }
                     },
                     decoration: InputDecoration(
@@ -146,6 +148,14 @@ class _UserCreateBody extends StatelessWidget {
       }
     }
 
+    if (await DatabaseHelper.ExistsAsync(
+        'user', 'name', _nameController.text)) {
+      _nameFocus.requestFocus();
+      DialogHelper.ShowSnack(
+          context, 'Usuario ${_nameController.text} já existe');
+      return;
+    }
+
     await _AddUser(
       context,
       User(
@@ -157,22 +167,20 @@ class _UserCreateBody extends StatelessWidget {
 
   Future _AddUser(BuildContext context, User user) async {
     try {
-
-      await _dbHelper.CreateAsync('user', user.toJson());
+      await DatabaseHelper.CreateAsync('user', user.toJson());
 
       await Router.Pop(context, data: user);
 
-      await _dbHelper.DisposeAsync();
+      await DatabaseHelper.DisposeAsync();
     } catch (ex) {
       print(ex);
     }
   }
 
   _validateUser<bool>(String val) {
-
     var result = false;
-    _dbHelper.ExistsAsync('user', 'name', val).then((value) => result = !value);
+    DatabaseHelper.ExistsAsync('user', 'name', val)
+        .then((value) => result = !value);
     return result;
   }
-
 }

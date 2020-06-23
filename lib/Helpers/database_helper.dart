@@ -5,18 +5,17 @@ import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
 
-  Database _db;
+  static Database _db;
+  static DatabaseHelper _instance;
 
-  DatabaseHelper();
+  static Future<void> connect() async{
 
-  Future<DatabaseHelper> instance() async{
-
-    await initBd();
-
-    return this;
+    if (_db == null){
+      await initBd();
+    }
   }
 
-  Future initBd() async {
+  static Future initBd() async {
 
     Directory storageDir = await getExternalStorageDirectory();
     String path = join(
@@ -33,7 +32,7 @@ class DatabaseHelper {
     await db.execute("CREATE TABLE user (id INTEGER PRIMARY KEY, name TEXT, password TEXT)");
   }
 
-  Future<int> CreateAsync(String table, Map<String, dynamic> data) async{
+  static Future<int> CreateAsync(String table, Map<String, dynamic> data) async{
     try{
 
       return await _db.insert(table, data);
@@ -44,7 +43,7 @@ class DatabaseHelper {
     }
   }
 
-  Future UpdateAsync(String table, Map<String, dynamic> data) async{
+  static Future UpdateAsync(String table, Map<String, dynamic> data) async{
     try{
       _db.update(table, data);
     }
@@ -53,7 +52,7 @@ class DatabaseHelper {
     }
   }
 
-  Future<int> DeleteAsync(String table, int id) async{
+  static Future<int> DeleteAsync(String table, int id) async{
     try{
       return await _db.delete(table,
           where: "id = ?",
@@ -65,7 +64,7 @@ class DatabaseHelper {
     }
   }
 
-  Future<Map<String, dynamic>> ReadAsync(String table) async{
+  static Future<Map<String, dynamic>> ReadAsync(String table) async{
     try{
 
       _db.query(table);
@@ -75,7 +74,7 @@ class DatabaseHelper {
     }
   }
 
-  Future<Map<String, dynamic>> GetAsync(String table, int id) async{
+  static Future<Map<String, dynamic>> GetAsync(String table, int id) async{
     try{
 
       var result = await _db.query(table,
@@ -90,7 +89,7 @@ class DatabaseHelper {
     }
   }
 
-  Future<List<Map<String, dynamic>>> QueryAsync(String table, String column, dynamic value) async{
+  static Future<List<Map<String, dynamic>>> QueryAsync(String table, String column, dynamic value) async{
     try{
       var result = await _db.query(table,
         where: "$column = ?",
@@ -104,7 +103,7 @@ class DatabaseHelper {
     }
   }
 
-  Future<bool> ExistsAsync(String table, String column, dynamic value) async{
+  static Future<bool> ExistsAsync(String table, String column, dynamic value) async{
     var result = await _db.query(table,
       where: "$column = ?",
       whereArgs: [value],
@@ -113,9 +112,11 @@ class DatabaseHelper {
     return result.length > 0;
   }
 
-  Future DisposeAsync() async{
+  static Future DisposeAsync() async{
 
     await _db.close();
+
+    _db = null;
 
     print('DisposeAsync called');
   }
