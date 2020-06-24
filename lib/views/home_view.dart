@@ -23,6 +23,7 @@ class Home extends StatelessWidget {
 class _HomeBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: Container(
         padding: EdgeInsets.all(5),
@@ -33,38 +34,59 @@ class _HomeBody extends StatelessWidget {
 
   Widget MenuItemList(BuildContext context) => ListView(children: [
         ListTile(
-            leading: Hero(
-              tag: "UserAdd",
-              child: Icon(Icons.supervised_user_circle),
-            ),
-            trailing: Icon(Icons.exit_to_app),
-            title: Text('Add user'),
-            subtitle: Text('Add a new user on the app'),
-            onTap: () => AddUser(context),
-            ),
+          leading: Hero(
+            tag: "UserAdd",
+            child: Icon(Icons.supervised_user_circle),
+          ),
+          trailing: Icon(Icons.exit_to_app),
+          title: Text('Add user'),
+          subtitle: Text('Add a new user on the app'),
+          onTap: () => AddUser(context),
+        ),
         ListTile(
-            leading: Icon(Icons.add),
-            trailing: Icon(Icons.exit_to_app),
-            title: Text('Add user'),
-            subtitle: Text('Add a new user on the app'),
-            onTap: () => Router.PushTo(Login(), context),
-            ),
+          leading: Icon(Icons.add),
+          trailing: Icon(Icons.exit_to_app),
+          title: Text('Add user'),
+          subtitle: Text('Add a new user on the app'),
+          onTap: () => Router.PushTo(Login(), context),
+        ),
+        ListTile(
+          leading: Icon(Icons.message),
+          trailing: Icon(Icons.exit_to_app),
+          title: Text('Add user'),
+          subtitle: Text('Add a new user on the app'),
+          onTap: () => DialogHelper.Confirm(
+                  context: context,
+                  message: 'Are you sure to delete this item?')
+              .then((result) => print(result)),
+        ),
+        ListTile(
+          leading: Icon(Icons.mode_comment),
+          trailing: Icon(Icons.exit_to_app),
+          title: Text('Add user'),
+          subtitle: Text('Add a new user on the app'),
+          onTap: () => DialogHelper.CustomAlertDialog(
+            context: context,
+            message: 'Are you sure to delete this item?',
+            customAlertDialogType: CustomAlertDialogType.OKCancel,
+            dismissible: false,
+            title: 'Exclusion confirmation',
+          ).then((result) => print(result)),
+        ),
       ]);
 }
 
-void ShowMessage(BuildContext context, String message){
-  DialogHelper.ShowSnack(context, message)  ;
+void ShowMessage(BuildContext context, String message) {
+  DialogHelper.ShowSnack(context, message);
 }
 
 Future AddUser(BuildContext context) async {
   try {
-
     var result = await Router.PushTo(UserCreate(), context) as User;
 
-    if (result != null){
+    if (result != null) {
       DialogHelper.ShowSnack(context, '${result.name} foi adicionado');
     }
-
   } catch (ex) {
     print(ex);
   }

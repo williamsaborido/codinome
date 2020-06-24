@@ -91,11 +91,8 @@ class _UserCreateBody extends StatelessWidget {
                     controller: _nameController,
                     focusNode: _nameFocus,
                     validator: (val) {
-                      if (val.isEmpty) {
-                        return 'Informe o usuário';
-                      } else {
-                        return null;
-                      }
+                      if (val.isEmpty) return 'Informe o usuário';
+                      else return null;
                     },
                     decoration: InputDecoration(
                       labelText: 'Usuario',
@@ -137,6 +134,7 @@ class _UserCreateBody extends StatelessWidget {
 
   Future _okClick(BuildContext context) async {
     if (!_key.currentState.validate()) {
+
       if (_nameController.text.isEmpty) {
         _nameFocus.requestFocus();
         return;
@@ -175,12 +173,5 @@ class _UserCreateBody extends StatelessWidget {
     } catch (ex) {
       print(ex);
     }
-  }
-
-  _validateUser<bool>(String val) {
-    var result = false;
-    DatabaseHelper.ExistsAsync('user', 'name', val)
-        .then((value) => result = !value);
-    return result;
   }
 }
