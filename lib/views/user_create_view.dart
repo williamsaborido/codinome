@@ -12,9 +12,16 @@ class UserCreate extends StatefulWidget {
 class _UserCreateState extends State<UserCreate> {
   final _formKey = GlobalKey<FormState>();
 
+  final _nameController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  final _nameFocus = FocusNode();
+  final _passwordFocus = FocusNode();
+
+  bool _userExists = false;
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     DatabaseHelper.connect()
@@ -26,51 +33,21 @@ class _UserCreateState extends State<UserCreate> {
 
   @override
   void setState(fn) {
-    // TODO: implement setState
     super.setState(fn);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: UserCreateAppBar(),
-      body: _UserCreateBody(_formKey),
-    );
-  }
-
-  AppBar UserCreateAppBar() => AppBar(
+      appBar: AppBar(
         title: Text('Add User'),
         centerTitle: true,
-      );
-}
-
-class _UserCreateBody extends StatelessWidget {
-  final GlobalKey<FormState> _key;
-
-  _UserCreateBody(this._key);
-
-  final _nameController = TextEditingController();
-  final _passwordController = TextEditingController();
-
-  final _nameFocus = FocusNode();
-  final _passwordFocus = FocusNode();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        padding: EdgeInsets.all(5),
-        child: _UserCreateForm(context),
       ),
-    );
-  }
-
-  Widget _UserCreateForm(BuildContext context) => SingleChildScrollView(
-        child: Container(
-          color: Colors.white,
-          margin: EdgeInsets.all(10),
-          child: Form(
-            key: _key,
+      body: Container(
+        padding: EdgeInsets.all(10),
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -91,8 +68,14 @@ class _UserCreateBody extends StatelessWidget {
                     controller: _nameController,
                     focusNode: _nameFocus,
                     validator: (val) {
-                      if (val.isEmpty) return 'Informe o usuário';
-                      else return null;
+                      if (val.isEmpty)
+                        return 'Informe o usuário';
+                      else if (_userExists){
+                        _userExists = false;
+                        return 'Usuario ${_nameController.text} já existe';
+                      }
+                      else
+                        return null;
                     },
                     decoration: InputDecoration(
                       labelText: 'Usuario',
@@ -130,10 +113,12 @@ class _UserCreateBody extends StatelessWidget {
             ),
           ),
         ),
-      );
+      ),
+    );
+  }
 
   Future _okClick(BuildContext context) async {
-    if (!_key.currentState.validate()) {
+    if (!_formKey.currentState.validate()) {
 
       if (_nameController.text.isEmpty) {
         _nameFocus.requestFocus();
@@ -144,30 +129,42 @@ class _UserCreateBody extends StatelessWidget {
         _passwordFocus.requestFocus();
         return;
       }
+
+      if (_userExists) {
+        _nameFocus.requestFocus();
+        return;
+      }
+    } else {
+      _formKey.currentState.save();
     }
 
     if (await DatabaseHelper.ExistsAsync(
         'user', 'name', _nameController.text)) {
-      _nameFocus.requestFocus();
-      DialogHelper.ShowSnack(
-          context, 'Usuario ${_nameController.text} já existe');
+      //_nameFocus.requestFocus();
+      //DialogHelper.ShowSnack(
+      //    context, 'Usuario ${_nameController.text} já existe');
+      setState(() {
+        _userExists = true;
+      });
       return;
     }
+    else{
+      _userExists = false;
+    }
 
-    await _AddUser(
-      context,
-      User(
-        name: _nameController.text.trim(),
-        password: _passwordController.text.trim(),
-      ),
+    var user = User(
+      name: _nameController.text.trim(),
+      password: _passwordController.text.trim(),
     );
+
+    await _AddUser(context, user);
+
+    await Router.Pop(context, data: user);
   }
 
   Future _AddUser(BuildContext context, User user) async {
     try {
       await DatabaseHelper.CreateAsync('user', user.toJson());
-
-      await Router.Pop(context, data: user);
 
       await DatabaseHelper.DisposeAsync();
     } catch (ex) {

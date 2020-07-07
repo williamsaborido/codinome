@@ -46,8 +46,8 @@ class DialogHelper {
 
   /// Confirm alert dialog, used to confirm an action before executing it
   ///
-  /// * `context`: the BuildContext object (required)
-  /// * `message`: a message (string). It shoud be a yes/no question since it's an
+  /// * `context`: the `BuildContext` object (required)
+  /// * `message`: a message (`String`). It should be a yes/no question since it's an
   /// action confirmation dialog.
   ///
   /// It returns a `future` of `bool` indicating whether the user selected yes (returns [true])

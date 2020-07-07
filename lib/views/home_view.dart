@@ -5,6 +5,8 @@ import 'package:codinome/views/login_view.dart';
 import 'package:codinome/views/user_create_view.dart';
 import 'package:flutter/material.dart';
 
+import 'backgrond_screen.dart';
+
 class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -23,7 +25,6 @@ class Home extends StatelessWidget {
 class _HomeBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: Container(
         padding: EdgeInsets.all(5),
@@ -32,7 +33,8 @@ class _HomeBody extends StatelessWidget {
     );
   }
 
-  Widget MenuItemList(BuildContext context) => ListView(children: [
+  Widget MenuItemList(BuildContext context) => ListView(
+      children: [
         ListTile(
           leading: Hero(
             tag: "UserAdd",
@@ -72,6 +74,13 @@ class _HomeBody extends StatelessWidget {
             dismissible: false,
             title: 'Exclusion confirmation',
           ).then((result) => print(result)),
+        ),
+        ListTile(
+          leading: Icon(Icons.image),
+          trailing: Icon(Icons.exit_to_app),
+          title: Text('Add user'),
+          subtitle: Text('Add a new user on the app'),
+          onTap: () => Router.PushTo(BackgroundScreen(), context),
         ),
       ]);
 }
